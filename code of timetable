@@ -1,0 +1,178 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+// Define constants
+#define MAX_SUBJECTS 5
+#define MAX_SESSIONS 10
+
+// Data structure to represent a study session
+struct StudySession {
+    char subject[50];
+    int duration;  // in minutes
+};
+
+// Data structure to represent a subject with study sessions
+struct Subject {
+    char name[50];
+    struct StudySession sessions[MAX_SESSIONS];
+    int numSessions;
+    int dailyGoal;  // in minutes
+    int totalStudyTime;  // in minutes
+};
+
+// Function to add a study session for a subject
+void addStudySession(struct Subject *subject, const char *sessionSubject, int duration) {
+    if (subject->numSessions < MAX_SESSIONS) {
+        strcpy(subject->sessions[subject->numSessions].subject, sessionSubject);
+        subject->sessions[subject->numSessions].duration = duration;
+        subject->numSessions++;
+        subject->totalStudyTime += duration;
+        printf("Study session added for %s.\n", subject->name);
+    } else {
+        printf("Maximum number of study sessions reached for %s.\n", subject->name);
+    }
+}
+
+// Function to set a daily study goal for a subject
+void setDailyGoal(struct Subject *subject, int goal) {
+    subject->dailyGoal = goal;
+    printf("Daily study goal set for %s: %d minutes.\n", subject->name, goal);
+}
+
+// Function to display study sessions for a subject
+void displayStudySessions(struct Subject *subject) {
+    printf("Study sessions for %s:\n", subject->name);
+    for (int i = 0; i < subject->numSessions; ++i) {
+        printf("Session %d: %s - %d minutes\n", i + 1, subject->sessions[i].subject, subject->sessions[i].duration);
+    }
+}
+
+// Function to generate a study report for a subject
+void generateStudyReport(struct Subject *subject) {
+    printf("Study Report for %s:\n", subject->name);
+    printf("Daily Goal: %d minutes\n", subject->dailyGoal);
+    printf("Total Study Time: %d minutes\n", subject->totalStudyTime);
+    printf("Study Sessions:\n");
+    displayStudySessions(subject);
+}
+
+int main() {
+    // Initialize subjects
+    struct Subject subjects[MAX_SUBJECTS];
+    int numSubjects = 0;
+
+    // Menu loop
+    int choice;
+    do {
+        printf("\nStudent Study Time Management System\n");
+        printf("1. Add a Subject\n");
+        printf("2. Add a Study Session\n");
+        printf("3. View Study Sessions\n");
+        printf("4. Set Daily Study Goal\n");
+        printf("5. Generate Study Report\n");
+        printf("0. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: {
+                if (numSubjects < MAX_SUBJECTS) {
+                    printf("Enter the name of the subject: ");
+                    scanf("%s", subjects[numSubjects].name);
+                    subjects[numSubjects].numSessions = 0;
+                    subjects[numSubjects].dailyGoal = 0;
+                    subjects[numSubjects].totalStudyTime = 0;
+                    numSubjects++;
+                    printf("Subject added successfully.\n");
+                } else {
+                    printf("Maximum number of subjects reached.\n");
+                }
+                break;
+            }
+            case 2: {
+                if (numSubjects > 0) {
+                    int subjectIndex;
+                    printf("Enter the index of the subject (1 to %d): ", numSubjects);
+                    scanf("%d", &subjectIndex);
+
+                    if (subjectIndex >= 1 && subjectIndex <= numSubjects) {
+                        char sessionSubject[50];
+                        int duration;
+                        printf("Enter the name of the study session: ");
+                        scanf("%s", sessionSubject);
+                        printf("Enter the duration of the study session (in minutes): ");
+                        scanf("%d", &duration);
+
+                        addStudySession(&subjects[subjectIndex - 1], sessionSubject, duration);
+                    } else {
+                        printf("Invalid subject index.\n");
+                    }
+                } else {
+                    printf("No subjects available. Please add a subject first.\n");
+                }
+                break;
+            }
+            case 3: {
+                if (numSubjects > 0) {
+                    int subjectIndex;
+                    printf("Enter the index of the subject (1 to %d): ", numSubjects);
+                    scanf("%d", &subjectIndex);
+
+                    if (subjectIndex >= 1 && subjectIndex <= numSubjects) {
+                        displayStudySessions(&subjects[subjectIndex - 1]);
+                    } else {
+                        printf("Invalid subject index.\n");
+                    }
+                } else {
+                    printf("No subjects available. Please add a subject first.\n");
+                }
+                break;
+            }
+            case 4: {
+                if (numSubjects > 0) {
+                    int subjectIndex;
+                    printf("Enter the index of the subject (1 to %d): ", numSubjects);
+                    scanf("%d", &subjectIndex);
+
+                    if (subjectIndex >= 1 && subjectIndex <= numSubjects) {
+                        int goal;
+                        printf("Enter the daily study goal for %s (in minutes): ", subjects[subjectIndex - 1].name);
+                        scanf("%d", &goal);
+
+                        setDailyGoal(&subjects[subjectIndex - 1], goal);
+                    } else {
+                        printf("Invalid subject index.\n");
+                    }
+                } else {
+                    printf("No subjects available. Please add a subject first.\n");
+                }
+                break;
+            }
+            case 5: {
+                if (numSubjects > 0) {
+                    int subjectIndex;
+                    printf("Enter the index of the subject (1 to %d): ", numSubjects);
+                    scanf("%d", &subjectIndex);
+
+                    if (subjectIndex >= 1 && subjectIndex <= numSubjects) {
+                        generateStudyReport(&subjects[subjectIndex - 1]);
+                    } else {
+                        printf("Invalid subject index.\n");
+                    }
+                } else {
+                    printf("No subjects available. Please add a subject first.\n");
+                }
+                break;
+            }
+            case 0:
+                printf("Exiting the program.\n");
+                break;
+            default:
+                printf("Invalid choice. Please enter a valid option.\n");
+        }
+    } while (choice != 0);
+
+    return 0;
+}
